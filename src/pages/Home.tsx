@@ -1,35 +1,51 @@
 import { Header } from "@/components/Header";
-import { Plus } from "lucide-react";
+import { Loader2, Pizza, Sparkles } from "lucide-react";
 
-import {
-    Activity,
-    ArrowUpRight,
-    CircleUser,
-    CreditCard,
-    DollarSign,
-    Menu,
-    Package2,
-    Search,
-    Users,
-} from "lucide-react"
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
 import { Link } from "react-router-dom";
+import NewCheckDialog from "@/components/NewCheckDialog";
+import { useStateValue } from "@/StateProvider";
+import { useEffect, useState } from "react";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { db } from "@/firebase";
 
-const history = [[]]
+const bgDeterminer = (score: number, maxScore: number = 10) => {
+    if (score <= 3) {
+        return "bg-dangerous"
+    }
+    else if (score > 3 && score <= 7) {
+        return "bg-moderateRisk"
+    }
+    else {
+        return "bg-safe"
+    }
+}
+
 export default function Home() {
+    const [loading, setLoading] = useState(true)
+    const [history, setHistory] = useState<any[]>([])
+    const [{ user }, dispatch] = useStateValue()
+    useEffect(() => {
+        getDocs(query(collection(db, "users", user.uid, "checks"), orderBy("timestamp", "desc"))).then(snapshot => {
+            setHistory(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
+            setLoading(false)
+        })
+    }, [])
+
+    if (loading) return (
+        <>
+            <Header />
+            <div className="w-full h-screen grid place-content-center">
+                <Loader2 className="mr-2 h-8 w-8 animate-spin" />
+            </div>
+        </>
+    )
+
     return (
         <>
             <Header />
@@ -46,74 +62,32 @@ export default function Home() {
                     <h1 className="text-4xl  text-center mt-6 font-semibold">Product History</h1>
                     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
                         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-                            <Link to="/check/gerg">
-                                <Card x-chunk="dashboard-01-chunk-0" className="bg-dangerous">
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">
-                                            Lays Chips
-                                        </CardTitle>
-                                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">5/10</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            +20.1% from last month
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                            <Link to="/check/gerg">
-                                <Card x-chunk="dashboard-01-chunk-1" className="bg-moderateRisk">
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">
-                                            Subscriptions
-                                        </CardTitle>
-                                        <Users className="h-4 w-4 text-muted-foreground" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">+2350</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            +180.1% from last month
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                            <Link to="/check/gerg">
-                                <Card x-chunk="dashboard-01-chunk-2" className="bg-safe">
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">Sales</CardTitle>
-                                        <CreditCard className="h-4 w-4 text-muted-foreground" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">+12,234</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            +19% from last month
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                            <Link to="/check/gerg">
-                                <Card x-chunk="dashboard-01-chunk-3">
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">Active Now</CardTitle>
-                                        <Activity className="h-4 w-4 text-muted-foreground" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">+573</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            +201 since last hour
-                                        </p>
-                                    </CardContent>
-                                </Card>
-                            </Link>
+                            {history.map(({ id, data }) => (
+                                <Link to={`/check/${id}`}>
+                                    <Card x-chunk="dashboard-01-chunk-0" className={bgDeterminer(data.score)}>
+                                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                            <CardTitle className="text-sm font-medium">
+                                                {data.name}
+                                            </CardTitle>
+                                            {data.type === "food" ? <Pizza className="h-4 w-4 text-muted-foreground" /> :
+                                                <Sparkles className="h-4 w-4 text-muted-foreground" />}
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="text-2xl font-bold">{data.score}/{data.maxScore}</div>
+                                            <p className="text-xs text-muted-foreground">
+                                                {data.shortMessage}
+                                            </p>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            ))}
+
                         </div>
                     </main>
                 </div>
             </>)}
             <div className="fixed bottom-8 right-8">
-                <Button variant="default" size="icon">
-                    <Plus className="h-6 w-6" />
-                </Button>
+                <NewCheckDialog uid={user.uid} />
             </div>
         </>
     );

@@ -1,6 +1,13 @@
-import { Label, Pie, PieChart } from "recharts"
 import * as React from "react"
+import { Label, Pie, PieChart } from "recharts"
 
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
 import {
     ChartConfig,
     ChartContainer,
@@ -25,14 +32,14 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export function PieChartWText({ data }) {
+export function GeminiScore({ data }) {
     const [chartData, setChartData] = React.useState([])
     React.useEffect(() => {
         let category = {}
-        if (data.category === "Dangerous") {
+        if (data.score <= 3) {
             category = { ingredientype: "Dangerous", fill: "var(--color-dangerous)" }
         }
-        else if (data.category === "Moderate Risk") {
+        else if (data.score > 3 && data.score <= 7) {
             category = { ingredientype: "Moderate Risk", fill: "var(--color-moderateRisk)" }
         }
         else {
@@ -40,16 +47,18 @@ export function PieChartWText({ data }) {
 
         }
         setChartData([
-            { ...category, count: Number(data.count) },
+            { ...category, count: Number(data.score) },
             {
-                count: Number(data.total) - Number(data.count),
+                count: Number(data.maxScore) - Number(data.score),
             },
         ])
     }, [data])
     return (
-        <div className="flex flex-col">
-
-            <div className="flex-1 pb-0">
+        <Card className="flex flex-col">
+            <CardHeader className="items-center pb-0">
+                <CardTitle>Gemini Score</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 pb-0">
                 <ChartContainer
                     config={chartConfig}
                     className="mx-auto aspect-square max-h-[250px]"
@@ -77,14 +86,7 @@ export function PieChartWText({ data }) {
                                                     y={viewBox.cy}
                                                     className="fill-foreground text-3xl font-bold"
                                                 >
-                                                    {data.count} / {data.total}
-                                                </tspan>
-                                                <tspan
-                                                    x={viewBox.cx}
-                                                    y={(viewBox.cy || 0) + 24}
-                                                    className="fill-muted-foreground"
-                                                >
-                                                    Ingredients
+                                                    {data.score} / {data.maxScore}
                                                 </tspan>
                                             </text>
                                         )
@@ -94,7 +96,14 @@ export function PieChartWText({ data }) {
                         </Pie>
                     </PieChart>
                 </ChartContainer>
-            </div>
-        </div>
+            </CardContent>
+            <CardFooter className="flex-col gap-2 text-sm">
+
+                <div className="flex-1  text-center leading-none text-muted-foreground">
+
+                    Conclusion - {data.shortMessage}
+                </div>
+            </CardFooter>
+        </Card>
     )
 }

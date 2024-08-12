@@ -1,14 +1,7 @@
 import { Link } from "react-router-dom";
 import {
-    Activity,
-    ArrowUpRight,
     CircleUser,
-    CreditCard,
-    DollarSign,
-    Menu,
     Package2,
-    Search,
-    Users,
 } from "lucide-react"
 
 import {
@@ -16,15 +9,7 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -33,126 +18,51 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
 import { ModeToggle } from "./mode-toggle";
+import { auth } from "@/firebase";
+import { useStateValue } from "@/StateProvider";
 
 export function Header() {
+    const [{ user }, dispatch] = useStateValue()
     return (
-        <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-            <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
+        <header className="z-10 sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+            <nav className="flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
                 <Link
-                    to="#"
+                    to="/"
                     className="flex items-center gap-2 text-lg font-semibold md:text-base"
                 >
                     <Package2 className="h-6 w-6" />
-                    <span className="sr-only">Acme Inc</span>
+                    <span className="">Label Check</span>
                 </Link>
-                <Link
-                    to="#"
-                    className="text-foreground transition-colors hover:text-foreground"
-                >
-                    Dashboard
-                </Link>
-                <Link
-                    to="#"
-                    className="text-muted-foreground transition-colors hover:text-foreground"
-                >
-                    Orders
-                </Link>
-                <Link
-                    to="#"
-                    className="text-muted-foreground transition-colors hover:text-foreground"
-                >
-                    Products
-                </Link>
-                <Link
-                    to="#"
-                    className="text-muted-foreground transition-colors hover:text-foreground"
-                >
-                    Customers
-                </Link>
-                <Link
-                    to="#"
-                    className="text-muted-foreground transition-colors hover:text-foreground"
-                >
-                    Analytics
-                </Link>
+
             </nav>
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="shrink-0 md:hidden"
-                    >
-                        <Menu className="h-5 w-5" />
-                        <span className="sr-only">Toggle navigation menu</span>
-                    </Button>
-                </SheetTrigger>
-                <SheetContent side="left">
-                    <nav className="grid gap-6 text-lg font-medium">
-                        <Link
-                            to="#"
-                            className="flex items-center gap-2 text-lg font-semibold"
-                        >
-                            <Package2 className="h-6 w-6" />
-                            <span className="sr-only">Acme Inc</span>
-                        </Link>
-                        <Link to="#" className="hover:text-foreground">
-                            Dashboard
-                        </Link>
-                        <Link
-                            to="#"
-                            className="text-muted-foreground hover:text-foreground"
-                        >
-                            Orders
-                        </Link>
-                        <Link
-                            to="#"
-                            className="text-muted-foreground hover:text-foreground"
-                        >
-                            Products
-                        </Link>
-                        <Link
-                            to="#"
-                            className="text-muted-foreground hover:text-foreground"
-                        >
-                            Customers
-                        </Link>
-                        <Link
-                            to="#"
-                            className="text-muted-foreground hover:text-foreground"
-                        >
-                            Analytics
-                        </Link>
-                    </nav>
-                </SheetContent>
-            </Sheet>
+
             <div className="ml-auto flex gap-2 sm:flex-initial">
                 <ModeToggle />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="secondary" size="icon" className="rounded-full">
-                            <CircleUser className="h-5 w-5" />
+                            <Avatar>
+                                <AvatarImage src={user.photoURL} />
+                                <AvatarFallback>
+
+                                    <CircleUser className="h-5 w-5" />
+                                </AvatarFallback>
+                            </Avatar>
                             <span className="sr-only">Toggle user menu</span>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuLabel>{user.displayName}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Settings</DropdownMenuItem>
-                        <DropdownMenuItem>Support</DropdownMenuItem>
+                        {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
+                        <DropdownMenuItem>
+                            <Link to="https://github.com/samyak003/LabelCheck">
+                                Github Repo
+                            </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Logout</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => { auth.signOut() }}>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

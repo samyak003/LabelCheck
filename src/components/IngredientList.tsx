@@ -15,7 +15,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PieChartWText } from "./PieChart"
 
 
-export default function IngredientList() {
+export default function IngredientList({ data }) {
+    const totalIngredients = data.safeIngredients.length + data.riskyIngredients.length + data.dangerousIngredients.length
     return (
         <Card>
             <CardHeader>
@@ -24,79 +25,44 @@ export default function IngredientList() {
             <CardContent className="grid gap-8">
                 <Tabs defaultValue="safe" >
                     <TabsList className="w-full">
-                        <TabsTrigger value="safe" className="w-full">Safe</TabsTrigger>
-                        <TabsTrigger value="risky" className="w-full">Risky</TabsTrigger>
-                        <TabsTrigger value="dangerous" className="w-full">Dangerous</TabsTrigger>
+                        <TabsTrigger value="safe" className="w-full" disabled={data.safeIngredients.length === 0}>Safe</TabsTrigger>
+                        <TabsTrigger value="risky" className="w-full" disabled={data.riskyIngredients.length === 0}>Risky</TabsTrigger>
+                        <TabsTrigger value="dangerous" className="w-full" disabled={data.dangerousIngredients.length === 0}>Dangerous</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="safe"><PieChartWText /></TabsContent>
-                    <TabsContent value="risky"><PieChartWText /></TabsContent>
-                    <TabsContent value="dangerous"><PieChartWText /></TabsContent>
+                    <TabsContent value="safe">
+                        <PieChartWText data={{ category: "Safe", count: data.safeIngredients.length, total: totalIngredients }} />
+                        <ol className="" >
+                            {data.safeIngredients.map((ingredient, index) => (
+                                <li className="my-4" key={index}>
+                                    <p className="text-sm font-medium leading-none capitalize">{index + 1}. {ingredient}</p>
+                                </li>
+                            ))}
+                        </ol>
+                    </TabsContent>
+                    <TabsContent value="risky">
+                        <PieChartWText data={{ category: "Moderate Risk", count: data.riskyIngredients.length, total: totalIngredients }} />
+                        <ol className="" >
+                            {data.riskyIngredients.map((ingredient, index) => (
+                                <li className="my-4" key={index}>
+                                    <p className="text-sm font-medium leading-none capitalize">{index + 1}. {ingredient}</p>
+                                </li>
+                            ))}
+                        </ol></TabsContent>
+
+                    <TabsContent value="dangerous">
+                        <PieChartWText data={{ category: "Dangerous", count: data.dangerousIngredients.length, total: totalIngredients }} />
+                        <ol className="" >
+                            {data.dangerousIngredients.map((ingredient, index) => (
+                                <li className="my-4" key={index}>
+                                    <p className="text-sm font-medium leading-none capitalize">{index + 1}. {ingredient}</p>
+                                </li>
+                            ))}
+                        </ol>
+                    </TabsContent>
                 </Tabs>
 
-                <div className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                        <AvatarImage src="/avatars/01.png" alt="Avatar" />
-                        <AvatarFallback>OM</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                        <p className="text-sm font-medium leading-none">Olivia Martin</p>
-                        <p className="text-sm text-muted-foreground">
-                            olivia.martin@email.com
-                        </p>
-                    </div>
-                    <div className="ml-auto font-medium">+$1,999.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                        <AvatarImage src="/avatars/02.png" alt="Avatar" />
-                        <AvatarFallback>JL</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                        <p className="text-sm font-medium leading-none">Jackson Lee</p>
-                        <p className="text-sm text-muted-foreground">
-                            jackson.lee@email.com
-                        </p>
-                    </div>
-                    <div className="ml-auto font-medium">+$39.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                        <AvatarImage src="/avatars/03.png" alt="Avatar" />
-                        <AvatarFallback>IN</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                        <p className="text-sm font-medium leading-none">Isabella Nguyen</p>
-                        <p className="text-sm text-muted-foreground">
-                            isabella.nguyen@email.com
-                        </p>
-                    </div>
-                    <div className="ml-auto font-medium">+$299.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                        <AvatarImage src="/avatars/04.png" alt="Avatar" />
-                        <AvatarFallback>WK</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                        <p className="text-sm font-medium leading-none">William Kim</p>
-                        <p className="text-sm text-muted-foreground">will@email.com</p>
-                    </div>
-                    <div className="ml-auto font-medium">+$99.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                        <AvatarImage src="/avatars/05.png" alt="Avatar" />
-                        <AvatarFallback>SD</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                        <p className="text-sm font-medium leading-none">Sofia Davis</p>
-                        <p className="text-sm text-muted-foreground">
-                            sofia.davis@email.com
-                        </p>
-                    </div>
-                    <div className="ml-auto font-medium">+$39.00</div>
-                </div>
+
             </CardContent>
-        </Card>
+        </Card >
     )
 }
