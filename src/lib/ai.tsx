@@ -47,7 +47,7 @@ export default async function AiwithImage(file, type) {
 
 	// generating content model for Gemini Google AI
 	let imageData = await fileToGenerativePart(file)
-	let prompt: string = `i have attached a photo of a label of a ${type} item. Suppose I want to live a healthy lifestyle. You are requested to tell me weather this item safe or not? Categorize the ingredients in 3 categories i.e. Safe (& Healthy), Moderate Risk and dangerous. You are required to give a score (out of 10) based on how safe the product is on daily usage/consumption. At last give a short comment on the ingredients of the product based on how safe they are. Give the output in the following json format -
+	let prompt: string = `i have attached a photo of a label of a ${type} item. Suppose I want to live a healthy lifestyle. You are requested to tell me weather this item safe or not? Categorize the ingredients in 3 categories i.e. Safe (& Healthy), Moderate Risk and dangerous. You are required to give a score (out of 10) based on how safe the product is on daily usage/consumption (Be harsh while giving the score). At last give a short comment on the ingredients of the product based on how safe they are. Give the output in the following json format -
 {
 verified : true
 score: number;
@@ -57,8 +57,8 @@ dangerousIngredients: string[];
 shortMessage: string (40-50 characters);
 }
 Scoring criteria :
-1-3 = Dangerous
-4-7 = Moderately Risky
+1-3 = Dangerous or Risky
+4-7 = Can be consumed daily
 8-10 = Safe & Healthy
 IF you are unable to read the ingredients then return - {verified : false}`
 
