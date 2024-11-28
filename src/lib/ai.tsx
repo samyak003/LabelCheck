@@ -62,7 +62,7 @@ Scoring criteria :
 8-10 = Safe & Healthy
 IF you are unable to read the ingredients then return - {verified : false}`
 
-	const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro", generationConfig: generationConfig, safetySettings: safetySettings });
+	const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: generationConfig, safetySettings: safetySettings });
 	const result = await model.generateContent([
 		prompt, imageData
 	]);
