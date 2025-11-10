@@ -23,7 +23,6 @@ import { useState } from "react";
 import { db } from "@/firebase";
 import { addDoc, collection, doc, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import ai_run from "@/lib/ai";
 import AiwithImage from "@/lib/ai";
 
 
@@ -42,9 +41,9 @@ export default function NewCheckDialog({ uid }: { uid: string }) {
             return false;
         }
 
-        const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+        const validImageTypes = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
         if (!validImageTypes.includes(file.type)) {
-            alert("Invalid file type. Please select an image (JPEG, PNG, GIF).");
+            alert("Invalid file type. Please select an image (JPEG/PNG/WEBP/HEIC/HEIF).");
             return false;
         }
 
@@ -63,29 +62,35 @@ export default function NewCheckDialog({ uid }: { uid: string }) {
             return
         }
         setLoading(true)
-
-        const aiResponse = JSON.parse(await AiwithImage(image, type))
-        if (aiResponse.verified === "false") {
-            alert("Cannot analyse this image, kindly use a different one.")
-            setName("")
-            setType("")
-            setImage(null)
-            setLoading(false)
-            return
+        try {
+            const aiResponse = await AiwithImage(image, type)
+            if (aiResponse.verified === "false") {
+                alert("Cannot analyse this image, kindly use a different one.");
+                setName("");
+                setType("");
+                setImage(null);
+                setLoading(false);
+                return;
+            }
+            addDoc(collection(db, "users", uid, "checks"), {
+                name: name,
+                type: type,
+                timestamp: serverTimestamp(),
+                maxScore: 10,
+                ...aiResponse
+            }).then((snapshot) => {
+                
+                navigate(`/check/${snapshot.id}`)
+            }).catch(() => {throw new Error("Something went wrong. Please try again later.")})
+        } catch(error) {
+            alert(error.message);
+        } finally{
+            setName("");
+            setType("");
+            setImage(null);
+            setLoading(false);
         }
-        addDoc(collection(db, "users", uid, "checks"), {
-            name: name,
-            type: type,
-            timestamp: serverTimestamp(),
-            maxScore: 10,
-            ...aiResponse
-        }).then((snapshot) => {
-            setName("")
-            setType("")
-            setImage(null)
-            setLoading(false)
-            navigate(`/check/${snapshot.id}`)
-        }).catch(() => alert("Something went wrong. Please try again later."))
+        
     }
     return (
         <Dialog>
@@ -114,7 +119,7 @@ export default function NewCheckDialog({ uid }: { uid: string }) {
                         </Select>
 
                         <Label htmlFor="picture">Product label picture</Label>
-                        <Input id="picture" type="file" onChange={input => validateImage(input.target)} disabled={loading} accept="image/*" required />
+                        <Input id="picture" type="file"  onChange={input => validateImage(input.target)} disabled={loading} accept="image/*" required />
 
                         <Button type="submit" disabled={loading}>
                             {loading &&
