@@ -20,15 +20,15 @@ const chartConfig = {
     },
     safe: {
         label: "Safe",
-        color: "hsl(var(--safe))",
+        color: "var(--safe)",
     },
     moderateRisk: {
         label: "Moderate Risk",
-        color: "hsl(var(--moderate-risk))",
+        color: "var(--moderate-risk)",
     },
     dangerous: {
         label: "Dangerous",
-        color: "hsl(var(--dangerous))",
+        color: "var(--dangerous)",
     },
 } satisfies ChartConfig
 
@@ -40,7 +40,7 @@ export function GeminiScore({ data }) {
             category = { ingredientype: "Dangerous", fill: "var(--color-dangerous)" }
         }
         else if (data.score > 3 && data.score <= 7) {
-            category = { ingredientype: "Moderate Risk", fill: "var(--color-moderateRisk)" }
+            category = { ingredientype: "Moderate Risk", fill: "var(--color-moderate-risk)" }
         }
         else {
             category = { ingredientype: "Safe", fill: "var(--color-safe)" }
