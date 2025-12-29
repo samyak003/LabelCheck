@@ -54,7 +54,7 @@ export function SignUpForm() {
     return (
         <div className="w-full h-screen grid place-content-center">
 
-            <Card className="mx-auto max-w-sm">
+            <Card className="mx-auto max-w-sm w-screen">
                 <CardHeader>
                     <CardTitle className="text-xl">Sign Up</CardTitle>
                     <CardDescription>

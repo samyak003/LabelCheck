@@ -54,7 +54,7 @@ export function GeminiScore({ data }) {
         ])
     }, [data])
     return (
-        <Card className="flex flex-col">
+        <Card>
             <CardHeader className="items-center pb-0">
                 <CardTitle>Gemini Score</CardTitle>
             </CardHeader>

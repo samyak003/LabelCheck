@@ -134,7 +134,7 @@ export default function NewCheckDialog({ uid }: { uid: string }) {
                         <Input type="text" disabled={loading} id="name" required placeholder="Enter product name" value={name} onChange={(e) => setName(e.target.value)} />
                         <Label htmlFor="type">Type</Label>
                         <Select required disabled={loading} value={type} onValueChange={(e) => setType(e)}>
-                            <SelectTrigger className="">
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select a product type" />
                             </SelectTrigger>
                             <SelectContent>
